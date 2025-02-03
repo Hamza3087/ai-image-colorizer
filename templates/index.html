@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Colorizer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        #result {
+            margin-top: 20px;
+            display: none;
+        }
+        img {
+            max-width: 100%;
+            max-height: 400px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Upload an Image to Colorize</h1>
+    <form id="upload-form">
+        <input type="file" id="image-file" name="image" accept="image/*" required>
+        <button type="submit">Upload Image</button>
+    </form>
+
+    <div id="result">
+        <h2>Colorized Image</h2>
+        <img id="colorized-image" src="" alt="Colorized Image">
+    </div>
+
+    <script>
+        const form = document.getElementById('upload-form');
+        const imageFileInput = document.getElementById('image-file');
+        const resultDiv = document.getElementById('result');
+        const colorizedImage = document.getElementById('colorized-image');
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            
+            const formData = new FormData();
+            formData.append('file', imageFileInput.files[0]);
+
+            try {
+                const response = await fetch('/colorize/', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to colorize image');
+                }
+
+                const blob = await response.blob();
+                const imageURL = URL.createObjectURL(blob);
+                
+                colorizedImage.src = imageURL;
+                resultDiv.style.display = 'block';
+            } catch (error) {
+                alert(error.message);
+            }
+        });
+    </script>
+</body>
+</html>
